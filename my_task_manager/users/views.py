@@ -131,3 +131,15 @@ def note_delete(request, note_id):
     note = get_object_or_404(Note, id=note_id, user=request.user)
     note.delete()
     return Response({"message": "Note deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def note_edit(request, note_id):
+    """ Edit a specific note """
+    note = get_object_or_404(Note, id=note_id, user=request.user)
+    
+    note.text = request.data.get('text', note.text)
+    note.save()
+    
+    serializer = NoteSerializer(note)
+    return Response(serializer.data)
